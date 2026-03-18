@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Antigravity">
+    <meta name="theme-color" content="#0a0a0f">
+    <meta name="description" content="Antigravity Mobile — AI IDE on your phone">
+    <title>Antigravity</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="auth-screen" class="auth-screen">
+        <div class="auth-card">
+            <div class="auth-logo">⚡</div>
+            <h1>Antigravity</h1>
+            <p class="auth-hint">Connect to your local server</p>
+            <input type="url" id="server-input" placeholder="https://your-tunnel.trycloudflare.com" autocomplete="url">
+            <input type="password" id="token-input" placeholder="Access token" autocomplete="off">
+            <button id="auth-btn" onclick="authenticate()">Connect</button>
+            <p id="auth-error" class="auth-error"></p>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app hidden">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <button class="icon-btn" id="file-toggle" onclick="toggleFileDrawer()" aria-label="Files">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            </button>
+            <div class="top-bar-center">
+                <span class="top-bar-title">Antigravity</span>
+                <span class="status-dot" id="status-dot"></span>
+            </div>
+            <div class="top-bar-actions">
+                <button class="icon-btn" onclick="toggleHistoryDrawer()" aria-label="History">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </button>
+                <button class="icon-btn" onclick="newConversation()" aria-label="New chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- File Drawer -->
+        <div id="file-drawer" class="file-drawer">
+            <div class="drawer-header">
+                <h2>Files</h2>
+                <button class="icon-btn" onclick="toggleFileDrawer()">✕</button>
+            </div>
+            <div class="drawer-breadcrumb" id="breadcrumb"></div>
+            <div class="file-list" id="file-list"></div>
+        </div>
+        <div id="file-overlay" class="file-overlay" onclick="toggleFileDrawer()"></div>
+
+        <!-- History Drawer -->
+        <div id="history-drawer" class="history-drawer">
+            <div class="drawer-header">
+                <h2>Conversations</h2>
+                <button class="icon-btn" onclick="toggleHistoryDrawer()">✕</button>
+            </div>
+            <div id="history-list" class="history-list"></div>
+        </div>
+        <div id="history-overlay" class="history-overlay" onclick="toggleHistoryDrawer()"></div>
+
+        <!-- Conversation Detail Modal -->
+        <div id="conv-modal" class="file-modal hidden">
+            <div class="file-modal-header">
+                <span id="conv-modal-title">Conversation</span>
+                <button class="icon-btn" onclick="closeConvModal()">✕</button>
+            </div>
+            <div id="conv-modal-content" class="file-modal-content"></div>
+        </div>
+
+        <!-- Chat Area -->
+        <main class="chat-area" id="chat-area">
+            <div class="welcome" id="welcome">
+                <div class="welcome-icon">⚡</div>
+                <h2>Antigravity Mobile</h2>
+                <p>All your tools, on your phone.</p>
+                <div class="quick-actions">
+                    <button class="quick-btn" onclick="quickSend('What\'s on my calendar today?')">📅 Today's schedule</button>
+                    <button class="quick-btn" onclick="quickSend('Any unread emails?')">📧 Check email</button>
+                    <button class="quick-btn" onclick="quickSend('Show my active goals')">🎯 Goals</button>
+                    <button class="quick-btn" onclick="quickSend('Generate my daily plan')">📋 Daily plan</button>
+                </div>
+            </div>
+            <div id="messages" class="messages"></div>
+        </main>
+
+        <!-- Input Bar -->
+        <div class="input-bar">
+            <textarea id="input" rows="1" placeholder="Message Antigravity..." 
+                      oninput="autoResize(this)" onkeydown="handleKeydown(event)"></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- File Viewer Modal -->
+    <div id="file-modal" class="file-modal hidden">
+        <div class="file-modal-header">
+            <span id="file-modal-title">file.txt</span>
+            <div>
+                <button class="icon-btn" id="file-save-btn" onclick="saveFile()" style="display:none">💾</button>
+                <button class="icon-btn" onclick="closeFileModal()">✕</button>
+            </div>
+        </div>
+        <pre id="file-modal-content" class="file-modal-content" contenteditable="false"></pre>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
