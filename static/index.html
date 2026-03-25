@@ -49,6 +49,9 @@
                 <button class="icon-btn" onclick="newConversation()" aria-label="New chat">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 </button>
+                <button class="icon-btn" onclick="openSettings()" aria-label="Settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                </button>
             </div>
         </header>
 
@@ -100,11 +103,51 @@
 
         <!-- Input Bar -->
         <div class="input-bar">
+            <button class="shortcut-btn" onclick="toggleShortcuts()" aria-label="Shortcuts">⚡</button>
             <textarea id="input" rows="1" placeholder="Message Antigravity..." 
                       oninput="autoResize(this)" onkeydown="handleKeydown(event)"></textarea>
             <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
             </button>
+        </div>
+
+        <!-- Shortcuts Bottom Sheet -->
+        <div id="shortcuts-sheet" class="shortcuts-sheet">
+            <div class="shortcuts-handle" onclick="toggleShortcuts()"><div class="handle-bar"></div></div>
+            <div class="shortcuts-grid">
+                <button class="sc-card" onclick="runShortcut('dashboard')">📊<span>Dashboard</span></button>
+                <button class="sc-card" onclick="runShortcut('goals')">🎯<span>Goals</span></button>
+                <button class="sc-card" onclick="runShortcut('energy')">🔋<span>Energy</span></button>
+                <button class="sc-card" onclick="runShortcut('linear')">📋<span>Linear</span></button>
+                <button class="sc-card" onclick="runShortcut('commitments')">🤝<span>Commitments</span></button>
+                <button class="sc-card" onclick="runShortcut('circadian')">🌙<span>Circadian</span></button>
+                <button class="sc-card" onclick="quickSend('Generate my daily plan')">📅<span>Daily Plan</span></button>
+                <button class="sc-card" onclick="quickSend('Check my unread emails')">📧<span>Email</span></button>
+            </div>
+        </div>
+        <div id="shortcuts-overlay" class="shortcuts-overlay" onclick="toggleShortcuts()"></div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="file-modal hidden">
+        <div class="file-modal-header">
+            <span>Settings</span>
+            <button class="icon-btn" onclick="closeSettings()">✕</button>
+        </div>
+        <div class="file-modal-content" style="padding:16px">
+            <div style="margin-bottom:16px">
+                <label style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px">Server</label>
+                <div id="settings-server" style="font-family:'JetBrains Mono';font-size:13px;color:var(--text-primary);margin-top:4px;word-break:break-all"></div>
+            </div>
+            <div style="margin-bottom:16px">
+                <label style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px">Status</label>
+                <div id="settings-status" style="font-size:13px;margin-top:4px"></div>
+            </div>
+            <div style="margin-bottom:16px">
+                <label style="font-size:12px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px">Tools</label>
+                <div id="settings-tools" style="font-size:13px;margin-top:4px"></div>
+            </div>
+            <button onclick="disconnect()" style="width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px">Disconnect</button>
         </div>
     </div>
 

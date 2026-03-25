@@ -692,6 +692,192 @@ function formatTimeAgo(isoStr) {
     } catch { return isoStr.substring(0, 10); }
 }
 
+// ── Shortcuts Panel ─────────────────────────────────────────────────────
+
+let shortcutsOpen = false;
+
+function toggleShortcuts() {
+    shortcutsOpen = !shortcutsOpen;
+    document.getElementById('shortcuts-sheet').classList.toggle('open', shortcutsOpen);
+    document.getElementById('shortcuts-overlay').classList.toggle('open', shortcutsOpen);
+}
+
+async function runShortcut(name) {
+    toggleShortcuts();
+    document.getElementById('welcome').classList.add('hidden');
+
+    const labels = {
+        dashboard: '📊 Dashboard',
+        goals: '🎯 Goals',
+        energy: '🔋 Energy',
+        linear: '📋 Linear',
+        commitments: '🤝 Commitments',
+        circadian: '🌙 Circadian',
+    };
+
+    const thinkingEl = appendThinking();
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/shortcuts/${name}?token=${TOKEN}`);
+        const data = await resp.json();
+        thinkingEl.remove();
+
+        const msg = createMessageElement('assistant');
+        const content = msg.querySelector('.message-content');
+
+        let text = `**${labels[name] || name}**\n\n`;
+        if (data.markdown) {
+            text += data.markdown;
+        } else if (data.text) {
+            text += data.text;
+        } else {
+            text += '```json\n' + JSON.stringify(data, null, 2) + '\n```';
+        }
+
+        renderMarkdown(content, text);
+        addCopyButtons(content);
+        document.getElementById('messages').appendChild(msg);
+        scrollToBottom();
+    } catch (e) {
+        thinkingEl.remove();
+        appendMessage('assistant', `⚠️ Shortcut failed: ${e.message}`);
+    }
+}
+
+// ── Settings ────────────────────────────────────────────────────────────
+
+async function openSettings() {
+    const modal = document.getElementById('settings-modal');
+    document.getElementById('settings-server').textContent = API_BASE || '—';
+    document.getElementById('settings-status').innerHTML = '<span style="color:var(--text-tertiary)">Checking...</span>';
+    document.getElementById('settings-tools').textContent = '—';
+    modal.classList.remove('hidden');
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/health?token=${TOKEN}`);
+        const data = await resp.json();
+        const statusColor = data.mcp_proxy === 'connected' ? 'var(--green)' : 'var(--red)';
+        document.getElementById('settings-status').innerHTML = `<span style="color:${statusColor}">${data.status} — MCP ${data.mcp_proxy}</span>`;
+        document.getElementById('settings-tools').textContent = `${data.mcp_info?.tools_exposed || '?'} tools`;
+    } catch (e) {
+        document.getElementById('settings-status').innerHTML = `<span style="color:var(--red)">Unreachable</span>`;
+    }
+}
+
+function closeSettings() {
+    document.getElementById('settings-modal').classList.add('hidden');
+}
+
+function disconnect() {
+    localStorage.removeItem('ag_server');
+    localStorage.removeItem('ag_token');
+    localStorage.removeItem('ag_history');
+    API_BASE = '';
+    TOKEN = '';
+    conversationHistory = [];
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('auth-screen').classList.remove('hidden');
+    document.getElementById('server-input').value = '';
+    document.getElementById('token-input').value = '';
+    closeSettings();
+}
+
+// ── Conversation Persistence ────────────────────────────────────────────
+
+function saveConversation() {
+    try {
+        const data = {
+            messages: conversationHistory.slice(-40), // Keep last 40 messages
+            continuation: continuationContext ? { ctx: continuationContext.substring(0, 500), title: continuationTitle } : null,
+            timestamp: Date.now(),
+        };
+        localStorage.setItem('ag_history', JSON.stringify(data));
+    } catch (e) {
+        // localStorage full, silently skip
+    }
+}
+
+function restoreConversation() {
+    try {
+        const raw = localStorage.getItem('ag_history');
+        if (!raw) return;
+        const data = JSON.parse(raw);
+
+        // Only restore if less than 2 hours old
+        if (Date.now() - data.timestamp > 2 * 60 * 60 * 1000) {
+            localStorage.removeItem('ag_history');
+            return;
+        }
+
+        if (data.messages && data.messages.length > 0) {
+            conversationHistory = data.messages;
+            document.getElementById('welcome').classList.add('hidden');
+
+            for (const msg of data.messages) {
+                const el = createMessageElement(msg.role);
+                const content = el.querySelector('.message-content');
+                if (msg.role === 'user') {
+                    content.textContent = msg.content;
+                } else {
+                    renderMarkdown(content, msg.content);
+                    addCopyButtons(content);
+                }
+                document.getElementById('messages').appendChild(el);
+            }
+            scrollToBottom();
+        }
+
+        if (data.continuation) {
+            continuationContext = data.continuation.ctx;
+            continuationTitle = data.continuation.title;
+        }
+    } catch (e) {
+        // Corrupted data, clear it
+        localStorage.removeItem('ag_history');
+    }
+}
+
+// Hook persistence into sendMessage — save after each exchange
+const _originalSendMessage = sendMessage;
+sendMessage = async function() {
+    await _originalSendMessage();
+    saveConversation();
+};
+
+// Restore on load
+if (TOKEN && API_BASE) {
+    setTimeout(restoreConversation, 100);
+}
+
+// ── Code Copy Buttons ───────────────────────────────────────────────────
+
+function addCopyButtons(container) {
+    container.querySelectorAll('pre').forEach(pre => {
+        if (pre.querySelector('.code-copy-btn')) return;
+        const btn = document.createElement('button');
+        btn.className = 'code-copy-btn';
+        btn.textContent = '📋';
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            const code = pre.querySelector('code');
+            navigator.clipboard.writeText(code ? code.textContent : pre.textContent).then(() => {
+                btn.textContent = '✅';
+                setTimeout(() => btn.textContent = '📋', 1500);
+            });
+            if (navigator.vibrate) navigator.vibrate(30);
+        };
+        pre.style.position = 'relative';
+        pre.appendChild(btn);
+    });
+}
+
+// Patch renderMarkdown to add copy buttons automatically
+const _originalRenderMarkdown = renderMarkdown;
+renderMarkdown = function(container, text, preserveCards) {
+    _originalRenderMarkdown(container, text, preserveCards);
+    addCopyButtons(container);
+};
+
 // ── PWA Install ─────────────────────────────────────────────────────────
 
 let deferredPrompt = null;
@@ -706,3 +892,4 @@ window.addEventListener('beforeinstallprompt', (e) => {
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
 }
+

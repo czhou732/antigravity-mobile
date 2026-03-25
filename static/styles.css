@@ -841,11 +841,170 @@ html, body {
     background: var(--bg-primary);
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────────────── */
-
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
     background: var(--border);
     border-radius: 4px;
 }
+
+/* ── Shortcuts Bottom Sheet ──────────────────────────────────────────── */
+
+.shortcuts-sheet {
+    position: fixed;
+    bottom: -320px;
+    left: 0;
+    right: 0;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    z-index: 250;
+    transition: bottom 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    padding-bottom: calc(var(--safe-bottom) + 16px);
+}
+
+.shortcuts-sheet.open {
+    bottom: 0;
+}
+
+.shortcuts-handle {
+    display: flex;
+    justify-content: center;
+    padding: 12px 0 8px;
+    cursor: pointer;
+}
+
+.handle-bar {
+    width: 36px;
+    height: 4px;
+    background: var(--text-tertiary);
+    border-radius: 2px;
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 0 16px 8px;
+}
+
+.sc-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 4px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 24px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s, border-color 0.15s;
+}
+
+.sc-card span {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.sc-card:active {
+    background: var(--surface-hover);
+    border-color: var(--border-active);
+    transform: scale(0.95);
+}
+
+.shortcuts-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 249;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.shortcuts-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Shortcut button in input bar */
+.shortcut-btn {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--text-primary);
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.1s, border-color 0.15s;
+}
+
+.shortcut-btn:active {
+    transform: scale(0.92);
+    border-color: var(--accent);
+}
+
+/* ── Code Copy Button ───────────────────────────────────────────────── */
+
+.message-content pre {
+    position: relative;
+}
+
+.code-copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 5;
+}
+
+.message-content pre:hover .code-copy-btn,
+.message-content pre:active .code-copy-btn {
+    opacity: 1;
+}
+
+/* Always show on mobile (no hover) */
+@media (pointer: coarse) {
+    .code-copy-btn { opacity: 0.7; }
+}
+
+/* ── Shortcut Result Card ───────────────────────────────────────────── */
+
+.shortcut-result {
+    margin: 8px 0;
+    padding: 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+.shortcut-result h3 {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: var(--accent-light);
+}
+
