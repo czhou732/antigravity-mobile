@@ -728,6 +728,8 @@ async function runShortcut(name) {
         let text = `**${labels[name] || name}**\n\n`;
         if (data.markdown) {
             text += data.markdown;
+        } else if (data.display) {
+            text += '```\n' + data.display + '\n```';
         } else if (data.text) {
             text += data.text;
         } else {

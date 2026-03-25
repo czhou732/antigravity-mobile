@@ -13953,3 +13953,16 @@ INFO:     100.87.212.127:0 - "GET /api/health?token=Wh3QXjekGTYfkXRiIg3EVB8x38OL
 INFO:     100.87.212.127:0 - "GET /api/health?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
 INFO:     100.87.212.127:0 - "GET /api/health?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
 INFO:     100.87.212.127:0 - "GET /api/health?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/health?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/dashboard?token= HTTP/1.1" 404 Not Found
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/energy?token= HTTP/1.1" 404 Not Found
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/dashboard?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 404 Not Found
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/goals?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 404 Not Found
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/energy?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 404 Not Found
+INFO:     100.87.212.127:0 - "GET /api/health?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/dashboard?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/goals?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/shortcuts/energy?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
+INFO:     100.87.212.127:0 - "GET /api/health?token=Wh3QXjekGTYfkXRiIg3EVB8x38OLHlcuQwat3R4aVx1Ih2bRBZKKLEr1uLVBDncp HTTP/1.1" 200 OK
